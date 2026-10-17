@@ -6,273 +6,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Member - SiPena</title>
 
-    <style>
-        :root {
-            --forest: #173F35;
-            --sage: #52796F;
-            --cream: #F4E8CD;
-            --white: #FFFFFF;
-            --background: #FAF9F4;
-            --text: #193F37;
-            --muted: #7B8984;
-            --border: #E1E6E1;
-            --danger: #D64545;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            padding: 24px;
-            background: var(--background);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .register-container {
-            width: 100%;
-            max-width: 940px;
-            min-height: 590px;
-            display: grid;
-            grid-template-columns: 0.9fr 1.1fr;
-            background: var(--white);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 15px 45px rgba(23, 63, 53, 0.10);
-        }
-
-        .register-info {
-            background: var(--forest);
-            color: var(--white);
-            padding: 45px 38px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 27px;
-            font-weight: 800;
-            margin-bottom: 45px;
-        }
-
-        .brand-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 13px;
-            background: var(--cream);
-            color: var(--forest);
-            display: grid;
-            place-items: center;
-            font-size: 26px;
-        }
-
-        .register-info h1 {
-            font-size: 34px;
-            line-height: 1.2;
-            margin-bottom: 18px;
-        }
-
-        .register-info p {
-            color: #D1DFD8;
-            font-size: 14px;
-            line-height: 1.9;
-        }
-
-        .quote {
-            margin-top: 32px;
-            padding: 17px;
-            background: rgba(255,255,255,.08);
-            border-left: 3px solid var(--cream);
-            border-radius: 5px;
-            color: var(--cream);
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .register-form {
-            padding: 40px 45px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .register-form h2 {
-            color: var(--forest);
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            color: var(--muted);
-            font-size: 14px;
-            margin-bottom: 27px;
-            line-height: 1.6;
-        }
-
-        .form-group {
-            margin-bottom: 17px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-
-        input {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            outline: none;
-            font-size: 14px;
-            color: var(--text);
-            background: #FFFFFF;
-            transition: .2s;
-        }
-
-        input:focus {
-            border-color: var(--sage);
-            box-shadow: 0 0 0 3px rgba(82, 121, 111, .12);
-        }
-
-        input::placeholder {
-            color: #A4ACA8;
-        }
-
-        .error {
-            color: var(--danger);
-            font-size: 12px;
-            margin-top: 6px;
-        }
-
-        .alert-error {
-            padding: 12px;
-            margin-bottom: 17px;
-            background: #FFF1F1;
-            border: 1px solid #F3D0D0;
-            border-radius: 9px;
-            color: var(--danger);
-            font-size: 13px;
-        }
-
-        .register-button {
-            width: 100%;
-            border: none;
-            border-radius: 10px;
-            background: var(--forest);
-            color: var(--cream);
-            font-size: 14px;
-            font-weight: 700;
-            padding: 15px;
-            cursor: pointer;
-            margin-top: 5px;
-            transition: .2s;
-        }
-
-        .register-button:hover {
-            background: var(--sage);
-        }
-
-        .login-link {
-            margin-top: 23px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .login-link a {
-            color: var(--forest);
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 24px;
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        @media (max-width: 700px) {
-            body {
-                padding: 12px;
-            }
-
-            .register-container {
-                grid-template-columns: 1fr;
-            }
-
-            .register-info {
-                padding: 27px;
-            }
-
-            .brand {
-                margin-bottom: 22px;
-            }
-
-            .register-info h1 {
-                font-size: 27px;
-            }
-
-            .quote {
-                margin-top: 20px;
-            }
-
-            .register-form {
-                padding: 30px 24px;
-            }
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: '#173F35',
+                        sage: '#52796F',
+                        cream: '#F4E8CD',
+                        white: '#FFFFFF',
+                        background: '#FAF9F4',
+                        text: '#193F37',
+                        muted: '#7B8984',
+                        border: '#E1E6E1',
+                        danger: '#D64545',
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'Helvetica', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
 </head>
 
-<body>
+<body class="box-border flex min-h-screen items-center justify-center bg-background p-6 font-sans max-[700px]:p-3">
 
-    <main class="register-container">
+    <main class="grid min-h-[590px] w-full max-w-[940px] grid-cols-[0.9fr_1.1fr] overflow-hidden rounded-[24px] bg-white shadow-[0_15px_45px_rgba(23,63,53,0.10)] max-[700px]:grid-cols-1">
 
-        <section class="register-info">
-            <div class="brand">
-                <span class="brand-icon">📖</span>
+        <section class="flex flex-col justify-center bg-forest px-[38px] py-[45px] text-white max-[700px]:p-[27px]">
+
+            <div class="mb-[45px] flex items-center gap-3 text-[27px] font-extrabold max-[700px]:mb-[22px]">
+                <span class="grid h-12 w-12 shrink-0 place-items-center rounded-[13px] bg-cream text-[26px] text-forest">
+                    📖
+                </span>
                 <span>SiPena</span>
             </div>
 
-            <h1>Mulai Perjalanan Literasimu!</h1>
+            <h1 class="mb-[18px] text-[34px] font-bold leading-[1.2] max-[700px]:text-[27px]">
+                Mulai Perjalanan Literasimu!
+            </h1>
 
-            <p>
+            <p class="text-sm leading-[1.9] text-[#D1DFD8]">
                 Buat akun SiPena dan temukan berbagai buku
                 menarik untuk menemani perjalanan belajarmu.
             </p>
 
-            <div class="quote">
+            <div class="mt-8 rounded-[5px] border-l-[3px] border-cream bg-[rgba(255,255,255,0.08)] p-[17px] text-[13px] leading-[1.7] text-cream max-[700px]:mt-5">
                 "Jelajahi Ilmu, Bangun Masa Depan."
             </div>
+
         </section>
 
-        <section class="register-form">
-            <h2>Buat Akun</h2>
+        <section class="flex flex-col justify-center px-[45px] py-10 max-[700px]:px-6 max-[700px]:py-[30px]">
 
-            <p class="subtitle">
+            <h2 class="mb-2 text-[28px] font-bold text-forest">
+                Buat Akun
+            </h2>
+
+            <p class="mb-[27px] text-sm leading-[1.6] text-muted">
                 Lengkapi data berikut untuk menjadi member SiPena.
             </p>
 
             @if ($errors->any())
-                <div class="alert-error">
+                <div
+                    class="mb-[17px] rounded-[9px] border border-[#F3D0D0] bg-[#FFF1F1] p-3 text-[13px] text-danger"
+                    role="alert"
+                >
                     Periksa kembali data yang kamu masukkan.
                 </div>
             @endif
@@ -280,8 +81,11 @@
             <form action="{{ route('register') }}" method="POST">
                 @csrf
 
-                <div class="form-group">
-                    <label for="nama">Nama lengkap</label>
+                <div class="mb-[17px]">
+                    <label for="nama" class="mb-2 block text-[13px] font-bold text-text">
+                        Nama lengkap
+                    </label>
+
                     <input
                         type="text"
                         id="nama"
@@ -290,15 +94,21 @@
                         placeholder="Masukkan nama lengkap"
                         autocomplete="name"
                         required
+                        class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
                     >
 
                     @error('nama')
-                        <p class="error">{{ $message }}</p>
+                        <p class="mt-[6px] text-xs text-danger">
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email</label>
+                <div class="mb-[17px]">
+                    <label for="email" class="mb-2 block text-[13px] font-bold text-text">
+                        Email
+                    </label>
+
                     <input
                         type="email"
                         id="email"
@@ -307,15 +117,21 @@
                         placeholder="nama@email.com"
                         autocomplete="email"
                         required
+                        class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
                     >
 
                     @error('email')
-                        <p class="error">{{ $message }}</p>
+                        <p class="mt-[6px] text-xs text-danger">
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="no_tlp">Nomor telepon</label>
+                <div class="mb-[17px]">
+                    <label for="no_tlp" class="mb-2 block text-[13px] font-bold text-text">
+                        Nomor telepon
+                    </label>
+
                     <input
                         type="tel"
                         id="no_tlp"
@@ -324,15 +140,21 @@
                         placeholder="Contoh: 081234567890"
                         autocomplete="tel"
                         required
+                        class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
                     >
 
                     @error('no_tlp')
-                        <p class="error">{{ $message }}</p>
+                        <p class="mt-[6px] text-xs text-danger">
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
+                <div class="mb-[17px]">
+                    <label for="password" class="mb-2 block text-[13px] font-bold text-text">
+                        Password
+                    </label>
+
                     <input
                         type="password"
                         id="password"
@@ -341,17 +163,21 @@
                         autocomplete="new-password"
                         minlength="8"
                         required
+                        class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
                     >
 
                     @error('password')
-                        <p class="error">{{ $message }}</p>
+                        <p class="mt-[6px] text-xs text-danger">
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="password_confirmation">
+                <div class="mb-[17px]">
+                    <label for="password_confirmation" class="mb-2 block text-[13px] font-bold text-text">
                         Konfirmasi password
                     </label>
+
                     <input
                         type="password"
                         id="password_confirmation"
@@ -360,22 +186,32 @@
                         autocomplete="new-password"
                         minlength="8"
                         required
+                        class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
                     >
                 </div>
 
-                <button type="submit" class="register-button">
+                <button
+                    type="submit"
+                    class="mt-[5px] w-full cursor-pointer rounded-[10px] border-0 bg-forest p-[15px] text-sm font-bold text-cream transition-colors duration-200 hover:bg-sage"
+                >
                     Daftar Sekarang
                 </button>
             </form>
 
-            <p class="login-link">
+            <p class="mt-[23px] text-center text-[13px] text-muted">
                 Sudah punya akun?
-                <a href="{{ route('login') }}">Masuk di sini</a>
+                <a
+                    href="{{ route('login') }}"
+                    class="font-bold text-forest no-underline hover:underline"
+                >
+                    Masuk di sini
+                </a>
             </p>
 
-            <p class="footer">
+            <p class="mt-6 text-center text-[11px] text-muted">
                 &copy; {{ date('Y') }} SiPena
             </p>
+
         </section>
 
     </main>
