@@ -1,22 +1,31 @@
 
 <?php
 
+use App\Http\Controllers\Admin\BookController as AdminBookController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 Route::get('/', function () {return redirect()->route('login');});
-Route::get('/login', [AuthenticatedSessionController::class, 'create']) ->name('login');
-Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']) ->name('logout');
-Route::middleware('auth')->prefix('member')->group(function () {
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'loginForm']) ->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::get('/register', [AuthController::class, 'registerForm']) ->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']) ->name('logout');
+});
+
+Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
     Route::get('/dashboard', [MemberDashboardController::class, 'index']) ->name('member.dashboard');
     Route::get('/riwayat', [MemberDashboardController::class, 'riwayat']) ->name('member.riwayat');
 });
-Route::get('/register', [RegisteredUserController::class, 'create']) ->name('register');
-Route::post('/register', [RegisteredUserController::class, 'store']);
-Route::middleware('auth')->prefix('admin')->group(function () {
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index']) ->name('admin.dashboard');
+    Route::get('/buku', [AdminBookController::class, 'index']) ->name('admin.buku');
 });

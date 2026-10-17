@@ -1,367 +1,228 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin | SiPena</title>
+@extends('layouts.admin')
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@section('title', 'Dashboard Administrator')
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #F7F7F2;
-            color: #26352F;
-        }
 
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
+@section('content')
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-        .sidebar {
-            width: 245px;
-            background: #173F35;
-            color: white;
-            padding: 28px 18px;
-            flex-shrink: 0;
-        }
+        <a href="#" class="group bg-[#173F35] text-white p-5 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex items-center justify-between cursor-pointer border border-[#173F35]">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-[#F4E8CD] group-hover:scale-110 transition-transform">
+                    <i data-lucide="book-plus" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white group-hover:text-[#F4E8CD] transition-colors">+ Catat Peminjaman</h3>
+                    <p class="text-xs text-white/70">Member datang meminjam</p>
+                </div>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[#F4E8CD] group-hover:bg-[#F4E8CD] group-hover:text-[#173F35] transition-all shrink-0">
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </div>
+        </a>
 
-        .brand {
-            font-size: 27px;
-            font-weight: bold;
-            margin: 0 12px 8px;
-        }
+        <a href="#" class="group bg-[#52796F] text-white p-5 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex items-center justify-between cursor-pointer border border-[#52796F]">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                    <i data-lucide="book-down" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">Catat Pengembalian</h3>
+                    <p class="text-xs text-white/70">Member mengembalikan buku</p>
+                </div>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center text-white group-hover:bg-white group-hover:text-[#52796F] transition-all shrink-0">
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </div>
+        </a>
 
-        .subtitle {
-            color: #D4E2D7;
-            font-size: 12px;
-            margin: 0 12px 38px;
-        }
+        <a href="#" class="group bg-[#F4E8CD] text-[#173F35] p-5 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex items-center justify-between cursor-pointer border border-[#173F35]/15">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#173F35]/10 flex items-center justify-center text-[#173F35] group-hover:scale-110 transition-transform">
+                    <i data-lucide="plus-circle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-[#173F35]">+ Tambah Buku</h3>
+                    <p class="text-xs text-[#52796F]">Koleksi baru masuk</p>
+                </div>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-[#173F35]/10 flex items-center justify-center text-[#173F35] group-hover:bg-[#173F35] group-hover:text-[#F4E8CD] transition-all shrink-0">
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </div>
+        </a>
+    </div>
 
-        .menu-title {
-            font-size: 11px;
-            color: #B8CFC3;
-            margin: 24px 12px 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .menu a {
-            display: block;
-            color: #E9F0EB;
-            text-decoration: none;
-            padding: 13px 12px;
-            margin-bottom: 6px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .menu a.active,
-        .menu a:hover {
-            background: #52796F;
-            color: white;
-        }
-
-        .logout {
-            margin-top: 35px;
-        }
-
-        .logout button {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #A7C0B4;
-            border-radius: 8px;
-            background: transparent;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .main {
-            flex: 1;
-            min-width: 0;
-            padding: 32px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-
-        .topbar h1 {
-            font-size: 27px;
-            color: #173F35;
-            margin-bottom: 8px;
-        }
-
-        .topbar p {
-            color: #78837C;
-            font-size: 14px;
-        }
-
-        .admin-label {
-            background: #E4EDE5;
-            color: #173F35;
-            padding: 10px 15px;
-            border-radius: 25px;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-
-        .welcome {
-            background: #173F35;
-            color: white;
-            padding: 27px;
-            border-radius: 14px;
-            margin-bottom: 25px;
-        }
-
-        .welcome h2 {
-            font-size: 21px;
-            margin-bottom: 10px;
-        }
-
-        .welcome p {
-            color: #E0E9E2;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            border: 1px solid #E7EAE3;
-            padding: 22px;
-            border-radius: 12px;
-        }
-
-        .stat-card .label {
-            font-size: 13px;
-            color: #78837C;
-            margin-bottom: 15px;
-        }
-
-        .stat-card .number {
-            color: #173F35;
-            font-size: 29px;
-            font-weight: bold;
-        }
-
-        .table-card {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid #E7EAE3;
-            overflow-x: auto;
-        }
-
-        .table-heading {
-            font-size: 18px;
-            color: #173F35;
-            margin-bottom: 22px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 550px;
-        }
-
-        th, td {
-            padding: 15px 12px;
-            text-align: left;
-            border-bottom: 1px solid #EDF0EA;
-            font-size: 13px;
-        }
-
-        th {
-            color: #68756D;
-            background: #F7F8F4;
-        }
-
-        td {
-            color: #435148;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
-            background: #E4EDE5;
-            color: #173F35;
-            font-size: 12px;
-        }
-
-        .empty {
-            text-align: center;
-            color: #78837C;
-            padding: 28px;
-        }
-
-        @media (max-width: 1050px) {
-            .stats {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (max-width: 650px) {
-            .layout {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-            }
-
-            .main {
-                padding: 20px 14px;
-            }
-
-            .topbar {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .stats {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .stat-card {
-                padding: 15px;
-            }
-
-            .stat-card .number {
-                font-size: 24px;
-            }
-        }
-    </style>
-</head>
-<body>
-<div class="layout">
-
-    <aside class="sidebar">
-        <div class="brand">SiPena.</div>
-        <div class="subtitle">Sistem Informasi Perpustakaan</div>
-
-        <div class="menu">
-            <div class="menu-title">Menu Utama</div>
-            <a href="{{ route('admin.dashboard') }}" class="active">
-                Dashboard
-            </a>
-            <a href="#">Kelola Buku</a>
-            <a href="#">Kategori Buku</a>
-            <a href="#">Data Anggota</a>
-            <a href="#">Peminjaman & Pengembalian</a>
-
-            <div class="menu-title">Akun</div>
-            <a href="#">Profil Admin</a>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/60 shadow-xs flex flex-col justify-between">
+            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total buku</span>
+            <div class="mt-3 flex items-baseline justify-between">
+                <span class="text-3xl font-extrabold text-[#173F35]">1.240</span>
+                <i data-lucide="book" class="w-5 h-5 text-gray-300"></i>
+            </div>
         </div>
 
-        <form action="{{ route('logout') }}" method="POST" class="logout">
-            @csrf
-            <button type="submit">Keluar dari Akun</button>
-        </form>
-    </aside>
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/60 shadow-xs flex flex-col justify-between">
+            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Anggota aktif</span>
+            <div class="mt-3 flex items-baseline justify-between">
+                <span class="text-3xl font-extrabold text-[#173F35]">312</span>
+                <i data-lucide="users" class="w-5 h-5 text-gray-300"></i>
+            </div>
+        </div>
 
-    <main class="main">
-        <div class="topbar">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/60 shadow-xs flex flex-col justify-between">
+            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Sedang dipinjam</span>
+            <div class="mt-3 flex items-baseline justify-between">
+                <span class="text-3xl font-extrabold text-[#173F35]">24</span>
+                <i data-lucide="bookmark" class="w-5 h-5 text-gray-300"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-red-100 shadow-xs flex flex-col justify-between border-b-4 border-b-red-600 overflow-hidden">
+            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Terlambat</span>
+            <div class="mt-3 flex items-baseline justify-between">
+                <span class="text-3xl font-extrabold text-red-600">2</span>
+                <i data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200/60 shadow-xs">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <h2 class="text-lg font-bold text-[#173F35]">Perlu ditindaklanjuti</h2>
+                    <p class="text-xs text-[#52796F] mt-0.5">Peminjaman yang memerlukan konfirmasi atau pengembalian</p>
+                </div>
+                <span class="text-xs bg-red-50 text-red-600 font-semibold px-2.5 py-1 rounded-full border border-red-100">
+                    3 Perlu Perhatian
+                </span>
+            </div>
+
+            <div class="divide-y divide-gray-100">
+                <div class="py-4 px-3 flex items-center justify-between gap-4 hover:bg-[#FCFAF5]/70 rounded-xl transition-colors">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-[#F4E8CD] text-[#173F35] font-bold text-sm flex items-center justify-center shrink-0">
+                            DL
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-sm font-semibold text-[#173F35] truncate">Dewi Lestari</h4>
+                            <p class="text-xs text-gray-500 truncate">
+                                <span class="font-medium text-gray-800">Bumi Manusia</span> · tenggat 9 Okt
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 shrink-0">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-100">
+                            Terlambat
+                        </span>
+                        <button type="button" class="px-3.5 py-1.5 rounded-lg bg-[#173F35] text-white hover:bg-[#173F35]/90 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5">
+                            <span>Kembalikan</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="py-4 px-3 flex items-center justify-between gap-4 hover:bg-[#FCFAF5]/70 rounded-xl transition-colors">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-[#F4E8CD] text-[#173F35] font-bold text-sm flex items-center justify-center shrink-0">
+                            RS
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-sm font-semibold text-[#173F35] truncate">Rina Safitri</h4>
+                            <p class="text-xs text-gray-500 truncate">
+                                <span class="font-medium text-gray-800">Laskar Pelangi</span> · tenggat hari ini
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 shrink-0">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                            Jatuh tempo
+                        </span>
+                        <button type="button" class="px-3.5 py-1.5 rounded-lg bg-[#173F35] text-white hover:bg-[#173F35]/90 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5">
+                            <span>Kembalikan</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="py-4 px-3 flex items-center justify-between gap-4 hover:bg-[#FCFAF5]/70 rounded-xl transition-colors">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-[#F4E8CD] text-[#173F35] font-bold text-sm flex items-center justify-center shrink-0">
+                            BS
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-sm font-semibold text-[#173F35] truncate">Budi Santoso</h4>
+                            <p class="text-xs text-gray-500 truncate">
+                                <span class="font-medium text-gray-800">Atomic Habits</span> · tenggat 19 Okt
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 shrink-0">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                            Dipinjam
+                        </span>
+                        <button type="button" class="px-3.5 py-1.5 rounded-lg bg-[#173F35] text-white hover:bg-[#173F35]/90 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5">
+                            <span>Kembalikan</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1 bg-white rounded-2xl p-6 border border-gray-200/60 shadow-xs flex flex-col justify-between">
             <div>
-                <h1>Dashboard Admin</h1>
-                <p>Kelola informasi dan aktivitas perpustakaan.</p>
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-lg font-bold text-[#173F35]">Aktivitas terbaru</h2>
+                    <i data-lucide="history" class="w-4 h-4 text-gray-400"></i>
+                </div>
+
+                <ul class="flex flex-col gap-4">
+                    <li class="flex items-start gap-3">
+                        <div class="w-2 h-2 rounded-full bg-[#173F35] mt-1.5 shrink-0"></div>
+                        <div class="text-xs text-gray-700 leading-relaxed">
+                            <span class="font-bold text-[#173F35]">09.12</span>
+                            <span class="font-semibold text-gray-900">Siti Aminah</span> meminjam
+                            <span class="italic font-medium text-[#173F35]">Filosofi Teras</span>
+                        </div>
+                    </li>
+
+                    <li class="flex items-start gap-3">
+                        <div class="w-2 h-2 rounded-full bg-[#52796F] mt-1.5 shrink-0"></div>
+                        <div class="text-xs text-gray-700 leading-relaxed">
+                            <span class="font-bold text-[#173F35]">08.47</span>
+                            <span class="font-semibold text-gray-900">Agus Wijaya</span> mengembalikan
+                            <span class="italic font-medium text-[#173F35]">Sapiens</span>
+                        </div>
+                    </li>
+
+                    <li class="flex items-start gap-3">
+                        <div class="w-2 h-2 rounded-full bg-[#173F35] mt-1.5 shrink-0"></div>
+                        <div class="text-xs text-gray-700 leading-relaxed">
+                            <span class="font-bold text-[#173F35]">08.15</span>
+                            <span class="font-semibold text-gray-900">Rina Safitri</span> meminjam
+                            <span class="italic font-medium text-[#173F35]">Cantik Itu Luka</span>
+                        </div>
+                    </li>
+
+                    <li class="flex items-start gap-3">
+                        <div class="w-2 h-2 rounded-full bg-amber-500 mt-1.5 shrink-0"></div>
+                        <div class="text-xs text-gray-700 leading-relaxed">
+                            <span class="font-bold text-[#173F35]">Kemarin</span>
+                            <span class="font-semibold text-gray-900">Budi Santoso</span> mendaftar anggota baru
+                        </div>
+                    </li>
+                </ul>
             </div>
-            <div class="admin-label">
-                Administrator
+
+            <div class="pt-6 border-t border-gray-100 mt-6 text-center">
+                <a href="#" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#173F35] hover:text-[#52796F] transition-colors">
+                    <span>Lihat Seluruh Aktivitas</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </a>
             </div>
         </div>
-
-        <section class="welcome">
-            <h2>Selamat datang, {{ auth()->user()->nama }}!</h2>
-            <p>
-                Pantau data koleksi buku, anggota, dan aktivitas
-                peminjaman perpustakaan melalui halaman ini.
-            </p>
-        </section>
-
-        <section class="stats">
-            <div class="stat-card">
-                <div class="label">Total Buku</div>
-                <div class="number">{{ $totalBuku }}</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="label">Kategori Buku</div>
-                <div class="number">{{ $totalKategori }}</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="label">Total Anggota</div>
-                <div class="number">{{ $totalAnggota }}</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="label">Total Peminjaman</div>
-                <div class="number">{{ $totalPeminjaman }}</div>
-            </div>
-        </section>
-
-        <section class="table-card">
-            <h2 class="table-heading">Peminjaman Terbaru</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Anggota</th>
-                        <th>Judul Buku</th>
-                        <th>Tanggal Pinjam</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($peminjamanTerbaru as $peminjaman)
-                        <tr>
-                            <td>
-                                {{ $peminjaman->user->nama ?? 'Pengguna tidak ditemukan' }}
-                            </td>
-                            <td>
-                                {{ $peminjaman->book->judul ?? 'Buku tidak ditemukan' }}
-                            </td>
-                            <td>
-                                {{ $peminjaman->tanggal_pinjam
-                                    ? \Carbon\Carbon::parse($peminjaman->tanggal_pinjam)->format('d/m/Y')
-                                    : '-' }}
-                            </td>
-                            <td>
-                                <span class="status">
-                                    {{ ucfirst($peminjaman->status) }}
-                                </span>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="empty">
-                                Belum ada data peminjaman.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </section>
-    </main>
+    </div>
 </div>
-</body>
-</html>
+@endsection

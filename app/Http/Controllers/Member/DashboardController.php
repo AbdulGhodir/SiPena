@@ -37,7 +37,7 @@ class DashboardController extends Controller
         $categories = Category::orderBy('nama_kategori')->get();
 
         $borrowings = Borrowing::with('book')
-            ->where('id_user', auth()->id())
+            ->where('id_user', auth()->guard()->id())
             ->latest('tanggal_pinjam')
             ->get();
 
@@ -50,10 +50,10 @@ class DashboardController extends Controller
     
     public function riwayat()
     {
-        abort_unless(auth()->user()->role === 'member', 403);
+        abort_unless(auth()->guard()->user()->role === 'member', 403);
 
-        $peminjaman = \App\Models\Borrowing::with('book')
-            ->where('id_user', auth()->id())
+        $peminjaman = Borrowing::with('book')
+            ->where('id_user', auth()->guard()->id())
             ->latest('tanggal_pinjam')
             ->get();
 
