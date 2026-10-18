@@ -81,7 +81,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($request->id);
 
-        if (auth()->id() === $user->id) {
+        if (auth()->guard()->id() === $user->id) {
             return redirect()->route('admin.pengguna')->with('error', 'Anda tidak dapat menghapus akun sendiri yang sedang login!');
         }
 

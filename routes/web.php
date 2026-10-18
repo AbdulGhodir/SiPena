@@ -30,6 +30,7 @@ Route::middleware(['auth', 'role:user'])->prefix('member')->group(function () {
     Route::get('/dashboard', [MemberDashboardController::class, 'index']) ->name('member.dashboard');
     Route::get('/riwayat', [MemberDashboardController::class, 'riwayat']) ->name('member.riwayat');
     Route::get('/buku/{id}', [MemberBookController::class, 'show'])->name('member.buku.show');
+    Route::post('/buku/{id}/pinjam', [MemberBookController::class, 'borrow'])->name('member.buku.borrow');
     Route::get('/profil', [MemberProfileController::class, 'index'])->name('member.profile.index');
     Route::put('/profil', [MemberProfileController::class, 'update'])->name('member.profile.update');
 });

@@ -6,19 +6,18 @@
     <title>Dashboard Member - SiPena</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { theme: { extend: {
             colors: { forest:'#173F35', sage:'#52796F', cream:'#F4E8CD',
                 background:'#FAF9F4', text:'#193F37', muted:'#81908B',
                 line:'#EDEDE7', danger:'#D94B4B' },
-                fontFamily: { sans:['Poppins','Helvetica','sans-serif'] }
-            }}};
+            fontFamily: { sans:['Poppins','sans-serif'] }
+        }}};
     </script>
 </head>
-<body class="min-h-screen bg-background font-sans text-text ">
+<body class="min-h-screen bg-background font-sans text-text flex flex-col justify-between">
 
     @php
         $member = auth()->user();
@@ -28,13 +27,7 @@
         $borrowings = $borrowings ?? collect();
 
         $activeBorrowings = $borrowings->filter(function ($borrowing) {
-            return strtolower($borrowing->status ?? '') === 'dipinjam';
-        });
-
-        $overdueBorrowings = $activeBorrowings->filter(function ($borrowing) {
-            return $borrowing->jatuh_tempo
-                && \Illuminate\Support\Carbon::parse($borrowing->jatuh_tempo)->isPast()
-                && !\Illuminate\Support\Carbon::parse($borrowing->jatuh_tempo)->isToday();
+            return in_array(strtolower($borrowing->status ?? ''), ['dipinjam', 'terlambat']);
         });
 
         $nearestDue = $activeBorrowings
@@ -46,302 +39,307 @@
         $selectedStock = request('stok', 'semua');
     @endphp
 
-    <!-- NAVBAR -->
-    <header class="navbar flex h-[72px] items-center justify-between gap-5 bg-background px-[30px] max-[700px]:h-auto max-[700px]:flex-wrap max-[700px]:px-[15px] max-[700px]:py-3">
-
-        <a href="{{ url('/member/dashboard') }}" class="no-underline text-inherit brand flex items-center gap-[11px] text-[23px] font-extrabold text-forest max-[700px]:text-xl">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/70 px-6 sm:px-10 py-4 flex items-center justify-between gap-4 transition-all shadow-2xs">
+        <a href="{{ route('member.dashboard') }}" class="flex items-center gap-3 text-2xl font-bold text-forest tracking-tight no-underline shrink-0">
             <x-logo size="w-5 h-5" />
             <span>SiPena</span>
         </a>
 
-        <nav class="nav-links flex items-center gap-3 max-[700px]:order-3 max-[700px]:w-full max-[700px]:justify-center">
-            <a href="{{ url('/member/dashboard') }}" class="active bg-forest text-cream shadow-[0_2px_4px_#00000015]">
+        <nav class="flex items-center gap-2">
+            <a href="{{ route('member.dashboard') }}" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-forest text-cream shadow-xs">
                 Beranda
             </a>
-
-            <a href="{{ url('/member/riwayat') }}">
+            <a href="{{ route('member.riwayat') }}" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-gray-600 hover:text-forest hover:bg-cream/50">
                 Riwayat
             </a>
-
-            <a href="{{ url('/member/profil') }}">
-                Profil
-            </a>
-            <form action="{{ route('logout') }}" method="POST" class="logout-form inline">
-                @csrf
-                <button type="submit" class="logout-button cursor-pointer rounded-[10px] border border-forest bg-transparent px-[15px] py-[10px] text-xs font-bold text-forest transition-colors duration-200 hover:bg-forest hover:text-white">
-                    Keluar
-                </button>
-            </form>
-
         </nav>
 
-        <a href="{{ url('/member/profil') }}" class="member-info flex items-center gap-[10px] text-[13px] font-semibold max-[700px]:text-xs">
-            <span class="avatar grid h-[38px] w-[38px] place-items-center rounded-full bg-sage text-xs text-white">
-                {{ strtoupper(substr($member->nama ?? 'M', 0, 1)) }}
-            </span>
+        <div class="relative group">
+            <button type="button" class="flex items-center gap-2.5 cursor-pointer py-1 focus:outline-none">
+                <div class="w-9 h-9 rounded-full bg-forest text-cream font-bold flex items-center justify-center text-xs shadow-xs ring-2 ring-sage/20">
+                    {{ strtoupper(substr($member->nama ?? 'M', 0, 2)) }}
+                </div>
+                <div class="hidden sm:flex flex-col text-left">
+                    <span class="text-xs font-semibold text-forest leading-tight">{{ $member->nama ?? 'Member' }}</span>
+                    <span class="text-[10px] text-sage font-medium">Anggota</span>
+                </div>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 group-hover:text-forest transition-colors"></i>
+            </button>
 
-            <span class="member-name max-[370px]:hidden ">
-                {{ $member->nama ?? 'Member' }}
-            </span>
-        </a>
-
+            <div class="absolute right-0 top-full pt-2 w-44 hidden group-hover:block z-50">
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 overflow-hidden">
+                    <a href="{{ route('member.profile.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-cream/40 hover:text-forest transition-colors">
+                        <i data-lucide="user" class="w-4 h-4 text-sage"></i>
+                        <span>Profil Saya</span>
+                    </a>
+                    <div class="my-1 border-t border-gray-100"></div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer text-left">
+                            <i data-lucide="log-out" class="w-4 h-4 text-red-500"></i>
+                            <span>Keluar</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <!-- HERO -->
-    <section class="hero relative mx-[15px] mt-4 h-[240px] overflow-hidden rounded-[30px] bg-forest p-11 text-cream max-[700px]:mx-[10px] max-[700px]:mt-[10px] max-[700px]:h-[225px] max-[700px]:px-6 max-[700px]:py-[30px]">
+    <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6">
+        <section class="relative overflow-hidden rounded-2xl bg-forest p-8 sm:p-10 text-cream shadow-sm">
+            <div class="relative z-10 max-w-lg">
+                <p class="text-xs sm:text-sm font-medium text-[#A8BEB5] mb-2">
+                    Halo, {{ $member->nama ?? 'Member' }} 👋
+                </p>
+                <h1 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight mb-3">
+                    Jelajahi Ilmu, Bangun Masa Depan.
+                </h1>
+                <p class="text-xs sm:text-sm text-[#A8BEB5]">
+                    Sedang dipinjam <strong class="text-cream font-bold">{{ $activeBorrowings->count() }} buku</strong>
+                    @if ($nearestDue)
+                        <span> · Tenggat terdekat </span>
+                        <strong class="text-cream font-bold">
+                            {{ \Carbon\Carbon::parse($nearestDue->jatuh_tempo)->locale('id')->translatedFormat('d M') }}
+                        </strong>
+                    @endif
+                </p>
+            </div>
 
-        <div class="hero-content relative z-[2] max-w-[540px] max-[700px]:max-w-full">
-            <p class="greeting mb-[13px] text-sm">
-                Halo, {{ $member->nama ?? 'Member' }}
-            </p>
+            <div class="absolute bottom-0 right-6 hidden sm:flex items-end gap-2.5 opacity-60" aria-hidden="true">
+                <span class="h-16 w-7 rounded-t-md bg-sage"></span>
+                <span class="h-28 w-7 rounded-t-md bg-cream"></span>
+                <span class="h-20 w-7 rounded-t-md bg-sage"></span>
+                <span class="h-36 w-7 rounded-t-md bg-sage"></span>
+                <span class="h-24 w-7 rounded-t-md bg-cream"></span>
+            </div>
+        </section>
 
-            <h1 class="mb-[14px] text-[clamp(27px,3.3vw,43px)] leading-[1.08] tracking-[-1.5px] text-white">Jelajahi Ilmu, Bangun Masa Depan.</h1>
+        <form action="{{ route('member.dashboard') }}"
+              method="GET"
+              class="relative z-20 max-w-4xl mx-auto -mt-6 bg-white p-2.5 rounded-2xl border border-gray-200/80 shadow-md flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
 
-            <p class="text-[13px] text-[#A8BEB5]">
-                Sedang dipinjam
-                <strong class="text-cream">{{ $activeBorrowings->count() }} buku</strong>
+            <input
+                class="flex-1 min-w-0 px-4 py-2 text-xs sm:text-sm text-gray-800 bg-transparent outline-none placeholder:text-gray-400"
+                type="search"
+                name="q"
+                value="{{ request('q') }}"
+                placeholder="Cari judul buku atau nama penulis..."
+                aria-label="Cari judul atau penulis buku"
+            >
 
-                @if ($nearestDue)
-                    <span> · Tenggat terdekat </span>
-                    <strong class="text-cream">
-                        {{ \Illuminate\Support\Carbon::parse($nearestDue->jatuh_tempo)->translatedFormat('d M') }}
-                    </strong>
-                @endif
-            </p>
-        </div>
+            <select class="px-3.5 py-2 text-xs sm:text-sm border-t sm:border-t-0 sm:border-l border-gray-200 bg-white text-gray-700 outline-none cursor-pointer rounded-lg"
+                    name="kategori"
+                    aria-label="Filter kategori">
+                <option value="">Semua kategori</option>
+                @foreach ($categories as $category)
+                    <option
+                        value="{{ $category->id }}"
+                        @selected((string) $selectedCategory === (string) $category->id)
+                    >
+                        {{ $category->nama_kategori }}
+                    </option>
+                @endforeach
+            </select>
 
-        <div class="hero-decoration absolute bottom-0 right-[35px] flex h-[175px] items-end gap-3 opacity-[0.85] max-[700px]:right-[10px] max-[700px]:opacity-[0.35]" aria-hidden="true">
-            <span class="h-[75px] w-[30px] rounded-t-[6px] bg-sage"></span>
-            <span class="h-[120px] w-[30px] rounded-t-[6px] bg-cream"></span>
-            <span class="h-[90px] w-[30px] rounded-t-[6px] bg-sage"></span>
-            <span class="h-[150px] w-[30px] rounded-t-[6px] bg-sage"></span>
-            <span class="h-[105px] w-[30px] rounded-t-[6px] bg-cream"></span>
-        </div>
+            <select class="px-3.5 py-2 text-xs sm:text-sm border-t sm:border-t-0 sm:border-l border-gray-200 bg-white text-gray-700 outline-none cursor-pointer rounded-lg"
+                    name="stok"
+                    aria-label="Filter stok">
+                <option value="semua" @selected($selectedStock === 'semua')>Semua stok</option>
+                <option value="tersedia" @selected($selectedStock === 'tersedia')>Tersedia</option>
+                <option value="habis" @selected($selectedStock === 'habis')>Stok habis</option>
+            </select>
 
-    </section>
+            <button type="submit" class="px-6 py-2.5 bg-forest text-cream font-bold text-xs sm:text-sm rounded-xl hover:bg-sage transition-all shrink-0 cursor-pointer">
+                Cari Buku
+            </button>
+        </form>
+    </div>
 
-    <!-- SEARCH DAN FILTER -->
-    <form action="{{ url('/member/dashboard') }}"
-          method="GET"
-          class="search-panel relative z-[3] mx-[4.5%] -mt-[30px] flex min-h-[66px] items-center gap-3 rounded-[17px] bg-white py-[10px] pl-[25px] pr-[11px] shadow-[0_8px_22px_#203b3017] max-[700px]:mx-[18px] max-[700px]:-mt-5 max-[700px]:flex-wrap max-[700px]:p-[15px]">
-
-        <input
-            class="search-input min-w-[100px] flex-1 border-0 bg-transparent text-sm text-text outline-none placeholder:text-[#9A9CA7] max-[700px]:basis-full max-[700px]:py-2"
-            type="search"
-            name="q"
-            value="{{ request('q') }}"
-            placeholder="Cari judul atau penulis..."
-            aria-label="Cari judul atau penulis buku"
-        >
-
-        <select class="filter-select max-w-[170px] border-0 border-l border-line bg-white px-3 py-[10px] text-[13px] text-text outline-none max-[700px]:min-w-0 max-[700px]:max-w-none max-[700px]:flex-1 max-[700px]:rounded-lg max-[700px]:border"
-                name="kategori"
-                aria-label="Filter kategori">
-
-            <option value="">Semua kategori</option>
-
-            @foreach ($categories as $category)
-                <option
-                    value="{{ $category->id }}"
-                    @selected((string) $selectedCategory === (string) $category->id)
-                >
-                    {{ $category->nama_kategori }}
-                </option>
-            @endforeach
-
-        </select>
-
-        <select class="filter-select max-w-[170px] border-0 border-l border-line bg-white px-3 py-[10px] text-[13px] text-text outline-none max-[700px]:min-w-0 max-[700px]:max-w-none max-[700px]:flex-1 max-[700px]:rounded-lg max-[700px]:border"
-                name="stok"
-                aria-label="Filter stok">
-
-            <option value="semua" @selected($selectedStock === 'semua')>
-                Semua stok
-            </option>
-
-            <option value="tersedia" @selected($selectedStock === 'tersedia')>
-                Tersedia
-            </option>
-
-            <option value="habis" @selected($selectedStock === 'habis')>
-                Stok habis
-            </option>
-
-        </select>
-
-        <button type="submit" class="search-button cursor-pointer rounded-xl border-0 bg-forest px-[25px] py-[14px] font-bold text-cream transition-colors duration-200 hover:bg-sage max-[700px]:flex-1 max-[700px]:py-3">
-            Cari Buku
-        </button>
-
-    </form>
-
-    <main class="content px-[15px] pb-[30px] pt-[45px] max-[700px]:px-3 max-[700px]:pb-5 max-[700px]:pt-[35px]">
-
-        <!-- SEDANG DIPINJAM -->
+    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 space-y-8">
         <section>
-            <h2 class="section-title mb-[17px] flex items-center gap-[9px] text-[19px]">
-                <span class="symbol text-[22px] text-sage">◴</span>
-                Sedang Kamu Pinjam
+            <h2 class="text-lg font-bold text-forest mb-4 flex items-center gap-2">
+                <span>⏱</span>
+                <span>Sedang Kamu Pinjam</span>
             </h2>
 
-            <div class="borrow-grid mb-[26px] grid grid-cols-2 gap-[15px] max-[700px]:grid-cols-1">
-
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @forelse ($activeBorrowings as $borrowing)
                     @php
-                        $isOverdue = $borrowing->jatuh_tempo
-                            && \Illuminate\Support\Carbon::parse($borrowing->jatuh_tempo)->isPast()
-                            && !\Illuminate\Support\Carbon::parse($borrowing->jatuh_tempo)->isToday();
+                        $statusText = strtolower($borrowing->status ?? '');
+                        $isOverdue = $statusText === 'terlambat' || ($borrowing->jatuh_tempo
+                            && \Carbon\Carbon::parse($borrowing->jatuh_tempo)->lt(now()->startOfDay()));
                     @endphp
 
-                    <article class="borrow-card flex min-h-[84px] items-center justify-between gap-3 rounded-[17px] border border-line bg-white p-[18px] shadow-[0_2px_3px_#00000006]">
-
-                        <div>
-                            <h3 class="mb-[6px] text-[15px]">
+                    <article class="bg-white border border-gray-200/70 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-3 shadow-2xs hover:border-forest/30 transition-all">
+                        <div class="min-w-0">
+                            <h3 class="text-sm font-bold text-forest truncate mb-1">
                                 {{ $borrowing->book->judul ?? 'Buku tidak tersedia' }}
                             </h3>
-
-                            <p class="text-[11px] text-muted">
+                            <p class="text-xs text-muted">
                                 Tenggat:
                                 @if ($borrowing->jatuh_tempo)
-                                    {{ \Illuminate\Support\Carbon::parse($borrowing->jatuh_tempo)->translatedFormat('d M Y') }}
+                                    <strong class="text-gray-700 font-semibold">
+                                        {{ \Carbon\Carbon::parse($borrowing->jatuh_tempo)->locale('id')->translatedFormat('d M Y') }}
+                                    </strong>
                                 @else
                                     Belum ditentukan
                                 @endif
                             </p>
                         </div>
 
-                        <span class="status {{ $isOverdue ? 'danger' : '' }} whitespace-nowrap rounded-[9px] bg-[#EDF2F0] px-[13px] py-[9px] text-[11px] font-bold text-sage">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap {{ $isOverdue ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100' }}">
                             {{ $isOverdue ? 'Terlambat' : 'Dipinjam' }}
                         </span>
-
                     </article>
-
                 @empty
-                    <div class="empty-state col-span-full rounded-[18px] border border-line bg-white px-5 py-10 text-center leading-[1.8] text-muted">
+                    <div class="col-span-full rounded-2xl border border-gray-200/70 bg-white p-8 text-center text-xs text-muted shadow-2xs">
                         <p>Kamu belum memiliki buku yang sedang dipinjam.</p>
                     </div>
                 @endforelse
-
             </div>
         </section>
 
-        <!-- DAFTAR BUKU DAN KATEGORI -->
-        <section class="book-layout grid grid-cols-[minmax(0,1fr)_265px] items-start gap-[30px] max-[1050px]:grid-cols-1">
+        <section class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+            <div class="lg:col-span-3">
+                <h2 class="text-lg font-bold text-forest mb-4">Eksplorasi Buku</h2>
 
-            <div class="book-section ">
-
-                <h2 class="section-title mb-[17px] flex items-center gap-[9px] text-[19px]">Eksplorasi Buku</h2>
-
-                <div class="book-grid grid grid-cols-4 gap-4 max-[1050px]:grid-cols-3 max-[700px]:grid-cols-2 max-[700px]:gap-[10px] max-[370px]:grid-cols-1">
-
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                     @forelse ($books as $book)
+                        <article class="bg-white border border-gray-200/70 rounded-2xl p-4 flex flex-col justify-between shadow-2xs hover:border-forest/30 transition-all">
+                            <div class="space-y-3">
+                                <div class="w-full aspect-[4/3] rounded-xl bg-forest overflow-hidden flex items-center justify-center text-cream">
+                                    @if ($book->gambar)
+                                        <img class="h-full w-full object-cover"
+                                            src="{{ asset('storage/' . $book->gambar) }}"
+                                            alt="Sampul {{ $book->judul }}"
+                                            loading="lazy"
+                                        >
+                                    @else
+                                        <span class="text-4xl">📖</span>
+                                    @endif
+                                </div>
 
-                        <article class="book-card flex min-w-0 flex-col rounded-[22px] border border-[#F0F0EA] bg-white p-[15px] shadow-[0_2px_3px_#00000004] max-[700px]:rounded-[17px] max-[700px]:p-[10px]">
+                                <div>
+                                    <h3 class="text-sm font-bold text-forest leading-snug line-clamp-1">{{ $book->judul }}</h3>
+                                    <p class="text-xs text-sage mt-0.5 truncate">{{ $book->penulis }}</p>
+                                </div>
 
-                            <div class="book-cover mb-5 grid h-[122px] place-items-center overflow-hidden rounded-2xl bg-forest text-cream max-[700px]:mb-[13px] max-[700px]:h-[115px]">
-
-                                @if ($book->gambar)
-                                    <img class="h-full w-full object-cover"
-                                        src="{{ asset('storage/' . $book->gambar) }}"
-                                        alt="Sampul {{ $book->judul }}"
-                                        loading="lazy"
-                                    >
-                                @else
-                                    <span class="book-symbol text-[40px]">📖</span>
-                                @endif
-
-                            </div>
-
-                            <h3 class="mb-[5px] text-[15px] leading-[1.4] [overflow-wrap:anywhere] max-[700px]:text-sm">{{ $book->judul }}</h3>
-
-                            <p class="author mb-[13px] text-xs leading-[1.5] text-sage">
-                                {{ $book->penulis }}
-                            </p>
-
-                            <div class="book-tags mb-[15px] flex flex-wrap gap-[6px]">
-
-                                <span class="tag rounded-md bg-cream px-[9px] py-[6px] text-[9px] font-bold">
-                                    {{ $book->category->nama_kategori ?? 'Tanpa kategori' }}
-                                </span>
-
-                                @if (($book->stok ?? 0) > 0)
-                                    <span class="tag stock rounded-md bg-cream px-[9px] py-[6px] text-[9px] font-bold bg-[#EDF2F0] text-sage">
-                                        Stok {{ $book->stok }}
+                                <div class="flex items-center justify-between text-xs pt-1">
+                                    <span class="px-2.5 py-0.5 rounded-md bg-cream text-forest font-semibold text-[11px] truncate max-w-[120px]">
+                                        {{ $book->category->nama_kategori ?? 'Umum' }}
                                     </span>
-                                @else
-                                    <span class="tag empty rounded-md bg-cream px-[9px] py-[6px] text-[9px] font-bold bg-[#FFF0F0] text-danger">
-                                        Stok habis
-                                    </span>
-                                @endif
 
+                                    @if (($book->stok ?? 0) > 0)
+                                        <span class="text-gray-500 font-medium text-[11px]">
+                                            Stok {{ $book->stok }}
+                                        </span>
+                                    @else
+                                        <span class="text-red-600 font-semibold text-[11px]">
+                                            Stok habis
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
 
                             <a
-                                href="{{ url('/member/buku/' . $book->id) }}"
-                                class="detail-button mt-auto block rounded-[11px] bg-cream px-2 py-3 text-center text-xs font-bold transition-colors duration-200 hover:bg-forest hover:text-white"
+                                href="{{ route('member.buku.show', $book->id) }}"
+                                class="mt-4 w-full py-2 border border-forest text-forest hover:bg-forest hover:text-white rounded-xl text-xs font-semibold transition-all text-center block"
                             >
                                 Selengkapnya
                             </a>
-
                         </article>
-
                     @empty
-
-                        <div class="empty-state col-span-full rounded-[18px] border border-line bg-white px-5 py-10 text-center leading-[1.8] text-muted">
-                            <p>
-                                Belum ada buku yang tersedia atau tidak ada
-                                buku yang cocok dengan pencarianmu.
-                            </p>
+                        <div class="col-span-full rounded-2xl border border-gray-200/70 bg-white p-12 text-center text-xs text-muted shadow-2xs">
+                            <p>Belum ada buku yang tersedia atau tidak ada buku yang cocok dengan pencarianmu.</p>
                         </div>
-
                     @endforelse
-
                 </div>
 
                 @if (method_exists($books, 'links'))
-                    <div class="mt-[22px]">
+                    <div class="mt-6">
                         {{ $books->links() }}
                     </div>
                 @endif
-
             </div>
 
-            <!-- SIDEBAR KATEGORI -->
-            <aside class="category-panel rounded-[24px] border border-[#F0F0EA] bg-white px-[22px] py-[25px] max-[700px]:px-[15px] max-[700px]:py-5 max-[1050px]:order-first">
+            <aside class="lg:col-span-1 bg-white border border-gray-200/70 rounded-2xl p-5 shadow-2xs">
+                <h2 class="text-sm font-bold text-forest uppercase tracking-wider mb-3">Kategori</h2>
 
-                <h2 class="mb-5 text-[19px]">Kategori</h2>
-
-                <div class="category-list max-[1050px]:flex max-[1050px]:flex-wrap max-[1050px]:gap-2">
-
+                <div class="flex flex-col gap-1">
                     <a
-                        href="{{ url('/member/dashboard') }}"
-                        class="category-link {{ !$selectedCategory ? 'active' : '' }} mb-1 flex items-center justify-between gap-[10px] rounded-xl px-[14px] py-[13px] text-[13px] hover:bg-cream max-[1050px]:bg-[#F8F8F3]"
+                        href="{{ route('member.dashboard') }}"
+                        class="px-3.5 py-2 rounded-xl text-xs font-medium transition-all {{ !$selectedCategory ? 'bg-forest text-cream font-bold shadow-xs' : 'text-gray-600 hover:bg-cream/40' }}"
                     >
-                        <span>Semua</span>
+                        Semua Kategori
                     </a>
 
                     @foreach ($categories as $category)
-
                         <a
-                            href="{{ url('/member/dashboard') . '?' . http_build_query(array_merge(request()->except('kategori', 'page'), ['kategori' => $category->id])) }}"
-                            class="category-link {{ (string) $selectedCategory === (string) $category->id ? 'active' : '' }} mb-1 flex items-center justify-between gap-[10px] rounded-xl px-[14px] py-[13px] text-[13px] hover:bg-cream max-[1050px]:bg-[#F8F8F3]"
+                            href="{{ route('member.dashboard', array_merge(request()->except('kategori', 'page'), ['kategori' => $category->id])) }}"
+                            class="px-3.5 py-2 rounded-xl text-xs font-medium transition-all {{ (string) $selectedCategory === (string) $category->id ? 'bg-forest text-cream font-bold shadow-xs' : 'text-gray-600 hover:bg-cream/40' }}"
                         >
-                            <span>{{ $category->nama_kategori }}</span>
+                            {{ $category->nama_kategori }}
                         </a>
-
                     @endforeach
-
                 </div>
-
             </aside>
-
         </section>
-
     </main>
 
-    <footer class="footer p-[15px] text-center text-xs text-muted">
+    <div class="fixed bottom-8 right-8 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+        @if (session('success'))
+            <div id="toastNotification" class="pointer-events-auto flex items-center justify-between gap-3 p-4 bg-emerald-600 text-white rounded-2xl shadow-xl transform translate-x-full transition-transform duration-300 ease-out">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xs font-semibold leading-relaxed">{{ session('success') }}</span>
+                </div>
+                <button type="button" onclick="closeToast()" class="text-white/80 hover:text-white cursor-pointer p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        @elseif (session('error') || $errors->any())
+            <div id="toastNotification" class="pointer-events-auto flex items-center justify-between gap-3 p-4 bg-red-600 text-white rounded-2xl shadow-xl transform translate-x-full transition-transform duration-300 ease-out">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                        <i data-lucide="alert-circle" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xs font-semibold leading-relaxed">{{ session('error') ?? $errors->first() }}</span>
+                </div>
+                <button type="button" onclick="closeToast()" class="text-white/80 hover:text-white cursor-pointer p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        @endif
+    </div>
+
+    <footer class="p-6 text-center text-xs text-muted border-t border-gray-200/50">
         &copy; {{ date('Y') }} SiPena · Sistem Informasi Perpustakaan
     </footer>
+
+    <script>
+        function closeToast() {
+            const toast = document.getElementById('toastNotification');
+            if (toast) {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const toast = document.getElementById('toastNotification');
+            if (toast) {
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full');
+                }, 100);
+
+                setTimeout(() => {
+                    closeToast();
+                }, 4000);
+            }
+        });
+    </script>
 
     <x-lucide />
 </body>

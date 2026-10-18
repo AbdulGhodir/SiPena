@@ -156,16 +156,31 @@
                         Password
                     </label>
 
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Minimal 8 karakter"
-                        autocomplete="new-password"
-                        minlength="8"
-                        required
-                        class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
-                    >
+                    <div class="relative">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Minimal 8 karakter"
+                            autocomplete="new-password"
+                            minlength="8"
+                            required
+                            class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] pr-11 text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
+                        >
+                        <button
+                            type="button"
+                            onclick="togglePassword('password', this)"
+                            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-forest focus:outline-none"
+                            aria-label="Toggle password"
+                        >
+                            <span class="eye-open block">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </span>
+                            <span class="eye-closed hidden">
+                                <i data-lucide="eye-off" class="w-4 h-4"></i>
+                            </span>
+                        </button>
+                    </div>
 
                     @error('password')
                         <p class="mt-[6px] text-xs text-danger">
@@ -179,16 +194,31 @@
                         Konfirmasi password
                     </label>
 
-                    <input
-                        type="password"
-                        id="password_confirmation"
-                        name="password_confirmation"
-                        placeholder="Ulangi password"
-                        autocomplete="new-password"
-                        minlength="8"
-                        required
-                        class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
-                    >
+                    <div class="relative">
+                        <input
+                            type="password"
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            placeholder="Ulangi password"
+                            autocomplete="new-password"
+                            minlength="8"
+                            required
+                            class="box-border w-full rounded-[10px] border border-border bg-white p-[13px_14px] pr-11 text-sm text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[#A4ACA8] focus:border-sage focus:shadow-[0_0_0_3px_rgba(82,121,111,0.12)]"
+                        >
+                        <button
+                            type="button"
+                            onclick="togglePassword('password_confirmation', this)"
+                            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-forest focus:outline-none"
+                            aria-label="Toggle konfirmasi password"
+                        >
+                            <span class="eye-open block">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </span>
+                            <span class="eye-closed hidden">
+                                <i data-lucide="eye-off" class="w-4 h-4"></i>
+                            </span>
+                        </button>
+                    </div>
                 </div>
 
                 <button
@@ -217,6 +247,29 @@
 
     </main>
 
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            const openEye = btn.querySelector('.eye-open');
+            const closedEye = btn.querySelector('.eye-closed');
+            if (openEye && closedEye) {
+                if (isPassword) {
+                    openEye.classList.add('hidden');
+                    openEye.classList.remove('block');
+                    closedEye.classList.remove('hidden');
+                    closedEye.classList.add('block');
+                } else {
+                    closedEye.classList.add('hidden');
+                    closedEye.classList.remove('block');
+                    openEye.classList.remove('hidden');
+                    openEye.classList.add('block');
+                }
+            }
+        }
+    </script>
     <x-lucide />
 </body>
 </html>

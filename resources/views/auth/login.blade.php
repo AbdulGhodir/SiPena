@@ -19,6 +19,7 @@
                         sage: '#52796F',
                         cream: '#F4E8CD',
                         sand: '#D9C69A',
+                        background: '#FAF9F4',
                     },
                     fontFamily: {
                         sans: ['Poppins', 'sans-serif'],
@@ -29,7 +30,7 @@
     </script>
 </head>
 
-<body class="box-border flex min-h-screen items-center justify-center bg-cream p-6 font-sans">
+<body class="box-border flex min-h-screen items-center justify-center bg-background p-6 font-sans">
 
     <div class="grid min-h-[520px] w-full max-w-[900px] grid-cols-1 overflow-hidden rounded-[24px] bg-white shadow-[0_15px_40px_rgba(23,63,53,0.12)] min-[651px]:grid-cols-2">
 
@@ -104,15 +105,30 @@
                         Password
                     </label>
 
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Masukkan password"
-                        autocomplete="current-password"
-                        required
-                        class="box-border w-full rounded-[10px] border border-[#D8DED8] bg-white p-[14px] text-sm outline-none focus:border-sage focus:ring-[3px] focus:ring-sage/10"
-                    >
+                    <div class="relative">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Masukkan password"
+                            autocomplete="current-password"
+                            required
+                            class="box-border w-full rounded-[10px] border border-[#D8DED8] bg-white p-[14px] pr-11 text-sm outline-none focus:border-sage focus:ring-[3px] focus:ring-sage/10"
+                        >
+                        <button
+                            type="button"
+                            onclick="togglePassword('password', this)"
+                            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#777] hover:text-forest focus:outline-none"
+                            aria-label="Toggle password"
+                        >
+                            <span class="eye-open block">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </span>
+                            <span class="eye-closed hidden">
+                                <i data-lucide="eye-off" class="w-4 h-4"></i>
+                            </span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Ingat Saya -->
@@ -155,6 +171,29 @@
 
     </div>
 
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            const openEye = btn.querySelector('.eye-open');
+            const closedEye = btn.querySelector('.eye-closed');
+            if (openEye && closedEye) {
+                if (isPassword) {
+                    openEye.classList.add('hidden');
+                    openEye.classList.remove('block');
+                    closedEye.classList.remove('hidden');
+                    closedEye.classList.add('block');
+                } else {
+                    closedEye.classList.add('hidden');
+                    closedEye.classList.remove('block');
+                    openEye.classList.remove('hidden');
+                    openEye.classList.add('block');
+                }
+            }
+        }
+    </script>
     <x-lucide />
 </body>
 </html>

@@ -23,7 +23,7 @@ class ProfileController extends Controller
         $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-            'no_tlp' => ['nullable', 'string', 'max:15'],
+            'no_tlp' => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'min:8', 'confirmed'],
         ]);
 
@@ -32,7 +32,7 @@ class ProfileController extends Controller
         $user->no_tlp = $request->no_tlp;
 
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            $user->password = $request->password;
         }
 
         /** @var \App\Models\User $user */

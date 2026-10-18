@@ -1,17 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Peminjaman - SiPena</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config={theme:{extend:{fontFamily:{poppins:["Poppins","sans-serif"]},colors:{forest:"#173F35",sage:"#52796F",cream:"#F4E8CD",page:"#FAF9F4",ink:"#203F38",muted:"#687B76",line:"#ECEDE8"}}}}</script>
+    <script>
+      tailwind.config = { theme: { extend: {
+        colors: { forest:'#173F35', sage:'#52796F', cream:'#F4E8CD',
+          background:'#FAF9F4', text:'#193F37', muted:'#81908B',
+          line:'#EDEDE7', danger:'#D94B4B', success:'#4B9E73' },
+        fontFamily: { sans:['Poppins','sans-serif'] }
+      }}};
+    </script>
 </head>
 
-<body class="min-h-screen bg-page text-ink font-poppins">
+<body class="min-h-screen bg-background font-sans text-text flex flex-col justify-between">
     @php
         $member = auth()->user();
         $filterAktif = request('status', 'semua');
@@ -20,9 +27,9 @@
         $totalPinjaman = $peminjaman->count();
 
         $totalTerlambat = $peminjaman->filter(function ($item) use ($sekarang) {
-            return $item->status === 'dipinjam'
+            return $item->status === 'terlambat' || ($item->status === 'dipinjam'
                 && $item->jatuh_tempo
-                && \Carbon\Carbon::parse($item->jatuh_tempo)->lt($sekarang->startOfDay());
+                && \Carbon\Carbon::parse($item->jatuh_tempo)->lt($sekarang->startOfDay()));
         })->count();
 
         $totalTepatWaktu = $peminjaman->filter(function ($item) use ($sekarang) {
@@ -34,140 +41,233 @@
         })->count();
     @endphp
 
-    <header class="navbar min-h-[70px] px-[30px] py-3 flex items-center justify-between gap-5 bg-page max-[720px]:px-4 flex-wrap">
-        <a href="{{ route('member.dashboard') }}" class="brand flex items-center gap-2.5 text-forest text-[23px] font-bold no-underline max-[720px]:text-xl">
-            <span class="brand-icon w-[38px] h-[42px] grid place-items-center bg-forest text-cream rounded-xl text-[23px]">📖</span>
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/70 px-6 sm:px-10 py-4 flex items-center justify-between gap-4 transition-all shadow-2xs">
+        <a href="{{ route('member.dashboard') }}" class="flex items-center gap-3 text-2xl font-bold text-forest tracking-tight no-underline shrink-0">
+            <x-logo size="w-5 h-5" />
             <span>SiPena</span>
         </a>
 
-        <nav class="nav-menu flex items-center justify-center gap-2.5 max-[720px]:order-3 max-[720px]:w-full max-[720px]:gap-0">
-            <a href="{{ route('member.dashboard') }}">Beranda</a>
-            <a href="{{ url('/member/riwayat') }}" class="active bg-forest text-cream outline outline-2 outline-[#172F29]">Riwayat</a>
-            <a href="{{ url('/member/profil') }}">Profil</a>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="logout-button border border-sage bg-transparent text-forest rounded-[9px] px-[13px] py-[9px] font-poppins text-xs cursor-pointer hover:bg-forest hover:text-white">Keluar</button>
-            </form>
-        </div>
+        <nav class="flex items-center gap-2">
+            <a href="{{ route('member.dashboard') }}" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-gray-600 hover:text-forest hover:bg-cream/50">
+                Beranda
+            </a>
+            <a href="{{ route('member.riwayat') }}" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-forest text-cream shadow-xs">
+                Riwayat
+            </a>
         </nav>
 
-        <div class="nav-right flex items-center gap-3 max-[720px]:gap-2">
-            <a href="{{ url('/member/profil') }}" class="member-info flex items-center gap-2.5 text-ink text-[13px] font-semibold no-underline">
-                <span class="avatar w-[38px] h-[38px] grid place-items-center rounded-full bg-sage text-white shrink-0">
+        <div class="relative group">
+            <button type="button" class="flex items-center gap-2.5 cursor-pointer py-1 focus:outline-none">
+                <div class="w-9 h-9 rounded-full bg-forest text-cream font-bold flex items-center justify-center text-xs shadow-xs ring-2 ring-sage/20">
                     {{ strtoupper(substr($member->nama ?? 'M', 0, 2)) }}
-                </span>
-                <span class="member-name max-[720px]:hidden">{{ $member->nama ?? 'Member' }}</span>
-            </a>
+                </div>
+                <div class="hidden sm:flex flex-col text-left">
+                    <span class="text-xs font-semibold text-forest leading-tight">{{ $member->nama ?? 'Member' }}</span>
+                    <span class="text-[10px] text-sage font-medium">Anggota</span>
+                </div>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 group-hover:text-forest transition-colors"></i>
+            </button>
+
+            <div class="absolute right-0 top-full pt-2 w-44 hidden group-hover:block z-50">
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 overflow-hidden">
+                    <a href="{{ route('member.profile.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-cream/40 hover:text-forest transition-colors">
+                        <i data-lucide="user" class="w-4 h-4 text-sage"></i>
+                        <span>Profil Saya</span>
+                    </a>
+                    <div class="my-1 border-t border-gray-100"></div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer text-left">
+                            <i data-lucide="log-out" class="w-4 h-4 text-red-500"></i>
+                            <span>Keluar</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <main class="container max-w-[990px] w-[calc(100%-40px)] mx-auto mt-[10px] mb-[50px] max-[720px]:w-[calc(100%-28px)] max-[720px]:mt-5">
-        <div class="page-heading mb-7">
-            <h1 class="text-[28px] leading-[1.5] text-forest font-bold max-[720px]:text-[23px]">Riwayat Peminjaman</h1>
-            <p class="text-sm text-sage">Semua buku yang pernah kamu pinjam</p>
+    <main class="max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 flex-1">
+        <div class="mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-forest">Riwayat Peminjaman</h1>
+            <p class="text-xs sm:text-sm text-sage mt-1">Daftar semua sirkulasi buku yang pernah kamu pinjam</p>
         </div>
 
-        <section class="summary grid grid-cols-3 gap-[15px] mb-[29px] max-[720px]:grid-cols-1 max-[720px]:gap-[10px] max-[720px]:mb-[22px]">
-            <div class="summary-card bg-white border border-[#F0F0EB] rounded-2xl px-[19px] py-[18px] flex items-center justify-between gap-[10px] shadow-[0_2px_2px_rgba(23,63,53,0.03)] max-[720px]:px-4 max-[720px]:py-[14px]">
-                <span class="text-[13px] font-semibold">Total pinjaman</span>
-                <strong class="text-[23px] text-forest max-[720px]:text-xl">{{ $totalPinjaman }}</strong>
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white border border-gray-200/70 rounded-2xl p-5 flex items-center justify-between shadow-2xs">
+                <div>
+                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Total Pinjaman</span>
+                    <strong class="text-2xl font-bold text-forest mt-1 block">{{ $totalPinjaman }}</strong>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-[#FCFAF5] border border-gray-200/60 flex items-center justify-center text-lg">📚</div>
             </div>
 
-            <div class="summary-card bg-white border border-[#F0F0EB] rounded-2xl px-[19px] py-[18px] flex items-center justify-between gap-[10px] shadow-[0_2px_2px_rgba(23,63,53,0.03)] max-[720px]:px-4 max-[720px]:py-[14px]">
-                <span class="text-[13px] font-semibold">Tepat waktu</span>
-                <strong class="text-[23px] text-forest max-[720px]:text-xl on-time text-sage">{{ $totalTepatWaktu }}</strong>
+            <div class="bg-white border border-gray-200/70 rounded-2xl p-5 flex items-center justify-between shadow-2xs">
+                <div>
+                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Tepat Waktu</span>
+                    <strong class="text-2xl font-bold text-emerald-700 mt-1 block">{{ $totalTepatWaktu }}</strong>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">✓</div>
             </div>
 
-            <div class="summary-card late-card bg-white border border-[#F0F0EB] rounded-2xl px-[19px] py-[18px] flex items-center justify-between gap-[10px] shadow-[0_2px_2px_rgba(23,63,53,0.03)] max-[720px]:px-4 max-[720px]:py-[14px] border-[#F4DEDA]">
-                <span class="text-[13px] font-semibold">Terlambat</span>
-                <strong class="text-[23px] text-forest max-[720px]:text-xl late text-[#E84B50]">{{ $totalTerlambat }}</strong>
+            <div class="bg-white border border-gray-200/70 rounded-2xl p-5 flex items-center justify-between shadow-2xs border-b-2 border-b-red-500">
+                <div>
+                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Terlambat</span>
+                    <strong class="text-2xl font-bold text-red-600 mt-1 block">{{ $totalTerlambat }}</strong>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-lg">!</div>
             </div>
         </section>
 
-        <div class="filters flex flex-wrap gap-[10px] mb-[22px]">
+        <div class="flex flex-wrap gap-2 mb-6">
             <a href="{{ url('/member/riwayat') }}"
-               class="filter-button {{ $filterAktif === 'semua' ? 'active bg-forest text-white border-forest' : '' }} border border-[#E2E5E1] bg-white text-ink px-[19px] py-[9px] rounded-[25px] font-poppins text-xs font-semibold no-underline cursor-pointer transition duration-200 hover:bg-forest hover:text-white hover:border-forest">
+               class="px-4 py-2 rounded-xl text-xs font-semibold transition-all border {{ $filterAktif === 'semua' ? 'bg-forest text-white border-forest shadow-xs' : 'bg-white border-gray-200/70 text-gray-600 hover:bg-cream/40' }}">
                 Semua
             </a>
 
             <a href="{{ url('/member/riwayat') }}?status=dipinjam"
-               class="filter-button {{ $filterAktif === 'dipinjam' ? 'active bg-forest text-white border-forest' : '' }} border border-[#E2E5E1] bg-white text-ink px-[19px] py-[9px] rounded-[25px] font-poppins text-xs font-semibold no-underline cursor-pointer transition duration-200 hover:bg-forest hover:text-white hover:border-forest">
-                Dipinjam
+               class="px-4 py-2 rounded-xl text-xs font-semibold transition-all border {{ $filterAktif === 'dipinjam' ? 'bg-forest text-white border-forest shadow-xs' : 'bg-white border-gray-200/70 text-gray-600 hover:bg-cream/40' }}">
+                Sedang Dipinjam
             </a>
 
             <a href="{{ url('/member/riwayat') }}?status=dikembalikan"
-               class="filter-button {{ $filterAktif === 'dikembalikan' ? 'active bg-forest text-white border-forest' : '' }} border border-[#E2E5E1] bg-white text-ink px-[19px] py-[9px] rounded-[25px] font-poppins text-xs font-semibold no-underline cursor-pointer transition duration-200 hover:bg-forest hover:text-white hover:border-forest">
+               class="px-4 py-2 rounded-xl text-xs font-semibold transition-all border {{ $filterAktif === 'dikembalikan' ? 'bg-forest text-white border-forest shadow-xs' : 'bg-white border-gray-200/70 text-gray-600 hover:bg-cream/40' }}">
                 Dikembalikan
             </a>
 
             <a href="{{ url('/member/riwayat') }}?status=terlambat"
-               class="filter-button {{ $filterAktif === 'terlambat' ? 'active bg-forest text-white border-forest' : '' }} border border-[#E2E5E1] bg-white text-ink px-[19px] py-[9px] rounded-[25px] font-poppins text-xs font-semibold no-underline cursor-pointer transition duration-200 hover:bg-forest hover:text-white hover:border-forest">
+               class="px-4 py-2 rounded-xl text-xs font-semibold transition-all border {{ $filterAktif === 'terlambat' ? 'bg-forest text-white border-forest shadow-xs' : 'bg-white border-gray-200/70 text-gray-600 hover:bg-cream/40' }}">
                 Terlambat
             </a>
         </div>
 
-        <section class="borrowing-list flex flex-col gap-[14px]">
+        <section class="space-y-3">
             @forelse ($peminjaman as $item)
                 @php
                     $statusAsli = strtolower($item->status ?? '');
 
-                    $terlambat = $statusAsli === 'dipinjam'
+                    $terlambat = $statusAsli === 'terlambat' || ($statusAsli === 'dipinjam'
                         && $item->jatuh_tempo
-                        && \Carbon\Carbon::parse($item->jatuh_tempo)->lt(now()->startOfDay());
+                        && \Carbon\Carbon::parse($item->jatuh_tempo)->lt(now()->startOfDay()));
 
                     if ($terlambat) {
                         $labelStatus = 'Terlambat';
-                        $classStatus = 'status-terlambat';
+                        $classBadge = 'bg-red-50 text-red-600 border border-red-100';
                     } elseif ($statusAsli === 'dikembalikan') {
                         $labelStatus = 'Dikembalikan';
-                        $classStatus = 'status-dikembalikan';
+                        $classBadge = 'bg-emerald-50 text-emerald-700 border border-emerald-100';
                     } elseif ($statusAsli === 'dipinjam' && $item->jatuh_tempo
                         && \Carbon\Carbon::parse($item->jatuh_tempo)->isToday()) {
-                        $labelStatus = 'Jatuh tempo';
-                        $classStatus = 'status-jatuh-tempo';
+                        $labelStatus = 'Jatuh Tempo Hari Ini';
+                        $classBadge = 'bg-amber-50 text-amber-700 border border-amber-200';
                     } else {
-                        $labelStatus = ucfirst($statusAsli ?: 'Dipinjam');
-                        $classStatus = 'status-dipinjam';
+                        $labelStatus = 'Sedang Dipinjam';
+                        $classBadge = 'bg-[#EDF2F0] text-sage border border-sage/20';
                     }
                 @endphp
 
-                <article class="borrowing-card bg-white border border-[#F0F0EB] rounded-2xl p-[15px] grid grid-cols-[minmax(220px,1fr)_minmax(160px,0.8fr)_auto] items-center gap-5 shadow-[0_2px_2px_rgba(23,63,53,0.03)] max-[720px]:grid-cols-[minmax(0,1fr)_auto] max-[720px]:gap-3 max-[720px]:p-[13px]">
-                    <div class="book-info flex items-center gap-[18px] min-w-0 max-[720px]:gap-3">
-                        <div class="book-icon w-[53px] h-[60px] shrink-0 grid place-items-center rounded-xl bg-forest text-cream text-[27px] even:bg-sage max-[720px]:w-[45px] max-[720px]:h-[52px] max-[720px]:text-[23px]">📖</div>
+                <article class="bg-white border border-gray-200/70 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs hover:border-forest/30 transition-all">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-12 h-14 shrink-0 rounded-xl bg-forest text-cream flex items-center justify-center text-xl shadow-xs overflow-hidden">
+                            @if ($item->book && $item->book->gambar)
+                                <img src="{{ asset('storage/' . $item->book->gambar) }}" alt="{{ $item->book->judul }}" class="w-full h-full object-cover">
+                            @else
+                                <span>📖</span>
+                            @endif
+                        </div>
 
-                        <div class="book-details min-w-0">
-                            <h3 class="text-forest text-[15px] font-semibold [overflow-wrap:anywhere] max-[720px]:text-[13px]">{{ $item->book->judul ?? 'Buku tidak ditemukan' }}</h3>
-                            <p class="text-sage text-xs mt-0.5">{{ $item->book->penulis ?? 'Penulis tidak diketahui' }}</p>
+                        <div class="min-w-0">
+                            <h3 class="text-sm sm:text-base font-bold text-forest truncate">{{ $item->book->judul ?? 'Buku tidak ditemukan' }}</h3>
+                            <p class="text-xs text-sage mt-0.5 truncate">{{ $item->book->penulis ?? 'Penulis tidak diketahui' }}</p>
                         </div>
                     </div>
 
-                    <div class="borrowing-date text-[#68716F] text-xs leading-[1.8] max-[720px]:col-start-1 max-[720px]:pl-[57px] max-[720px]:text-[11px]">
-                        @if ($item->tanggal_pinjam)
-                            {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->translatedFormat('j M') }}
-                        @else
-                            -
-                        @endif
+                    <div class="flex items-center justify-between sm:justify-end gap-4 text-xs shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100">
+                        <div class="text-gray-500 text-left sm:text-right">
+                            <span class="block text-gray-700 font-medium">
+                                Pinjam: {{ $item->tanggal_pinjam ? \Carbon\Carbon::parse($item->tanggal_pinjam)->translatedFormat('d M Y') : '-' }}
+                            </span>
+                            @if ($statusAsli === 'dikembalikan' && $item->tanggal_kembali)
+                                <span class="text-emerald-700 font-semibold block mt-0.5">
+                                    Kembali: {{ \Carbon\Carbon::parse($item->tanggal_kembali)->translatedFormat('d M Y') }}
+                                </span>
+                            @elseif ($item->jatuh_tempo)
+                                <span class="text-sage block mt-0.5">
+                                    Tenggat: {{ \Carbon\Carbon::parse($item->jatuh_tempo)->translatedFormat('d M Y') }}
+                                </span>
+                            @endif
+                        </div>
 
-                        @if ($statusAsli === 'dikembalikan' && $item->tanggal_kembali)
-                            – kembali
-                            {{ \Carbon\Carbon::parse($item->tanggal_kembali)->translatedFormat('j M') }}
-                        @elseif ($item->jatuh_tempo)
-                            – tenggat
-                            {{ \Carbon\Carbon::parse($item->jatuh_tempo)->translatedFormat('j M') }}
-                        @endif
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap {{ $classBadge }}">
+                            {{ $labelStatus }}
+                        </span>
                     </div>
-
-                    <span class="status {{ $classStatus }} inline-block whitespace-nowrap text-center rounded-[30px] px-[13px] py-[6px] text-[10px] font-semibold border border-transparent max-[720px]:col-start-2 max-[720px]:row-span-2 max-[720px]:whitespace-normal max-[720px]:max-w-[100px]">
-                        {{ $labelStatus }}
-                    </span>
                 </article>
             @empty
-                <div class="empty-state p-[55px_20px] bg-white border border-line rounded-2xl text-center">
-                    <div class="empty-icon text-[42px] mb-3">📚</div>
-                    <h3 class="text-forest text-[17px] mb-1.5">Belum ada riwayat peminjaman</h3>
-                    <p class="text-muted text-[13px]">Buku yang kamu pinjam akan muncul di halaman ini.</p>
+                <div class="p-12 bg-white border border-gray-200/70 rounded-2xl text-center shadow-xs">
+                    <div class="text-4xl mb-3">📚</div>
+                    <h3 class="text-base font-bold text-forest">Belum ada riwayat peminjaman</h3>
+                    <p class="text-xs text-muted mt-1">Buku yang kamu pinjam akan tercatat otomatis di halaman ini.</p>
                 </div>
             @endforelse
         </section>
     </main>
+
+    <div class="fixed bottom-8 right-8 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+        @if (session('success'))
+            <div id="toastNotification" class="pointer-events-auto flex items-center justify-between gap-3 p-4 bg-emerald-600 text-white rounded-2xl shadow-xl transform translate-x-full transition-transform duration-300 ease-out">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xs font-semibold leading-relaxed">{{ session('success') }}</span>
+                </div>
+                <button type="button" onclick="closeToast()" class="text-white/80 hover:text-white cursor-pointer p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        @elseif (session('error') || $errors->any())
+            <div id="toastNotification" class="pointer-events-auto flex items-center justify-between gap-3 p-4 bg-red-600 text-white rounded-2xl shadow-xl transform translate-x-full transition-transform duration-300 ease-out">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                        <i data-lucide="alert-circle" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xs font-semibold leading-relaxed">{{ session('error') ?? $errors->first() }}</span>
+                </div>
+                <button type="button" onclick="closeToast()" class="text-white/80 hover:text-white cursor-pointer p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        @endif
+    </div>
+
+    <footer class="p-6 text-center text-xs text-muted border-t border-gray-200/50">
+        &copy; {{ date('Y') }} SiPena · Sistem Informasi Perpustakaan
+    </footer>
+
+    <script>
+        function closeToast() {
+            const toast = document.getElementById('toastNotification');
+            if (toast) {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const toast = document.getElementById('toastNotification');
+            if (toast) {
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full');
+                }, 100);
+
+                setTimeout(() => {
+                    closeToast();
+                }, 4000);
+            }
+        });
+    </script>
+
+    <x-lucide />
 </body>
 </html>
