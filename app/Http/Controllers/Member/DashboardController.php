@@ -50,7 +50,7 @@ class DashboardController extends Controller
     
     public function riwayat()
     {
-        abort_unless(auth()->guard()->user()->role === 'member', 403);
+        abort_unless(auth()->guard()->user()->role === 'user', 403);
 
         $peminjaman = Borrowing::with('book')
             ->where('id_user', auth()->guard()->id())

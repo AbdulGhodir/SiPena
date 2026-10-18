@@ -1,15 +1,17 @@
 
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\BookController as AdminBookController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\MemberController as AdminMemberController;
 use App\Http\Controllers\Admin\BorrowingController as AdminBorrowingController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Member\BookController as MemberBookController;
+use App\Http\Controllers\Member\ProfileController as MemberProfileController;
 
 Route::get('/', function () {return redirect()->route('login');});
 
@@ -24,9 +26,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']) ->name('logout');
 });
 
-Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
+Route::middleware(['auth', 'role:user'])->prefix('member')->group(function () {
     Route::get('/dashboard', [MemberDashboardController::class, 'index']) ->name('member.dashboard');
     Route::get('/riwayat', [MemberDashboardController::class, 'riwayat']) ->name('member.riwayat');
+    Route::get('/buku/{id}', [MemberBookController::class, 'show'])->name('member.buku.show');
+    Route::get('/profil', [MemberProfileController::class, 'index'])->name('member.profile.index');
+    Route::put('/profil', [MemberProfileController::class, 'update'])->name('member.profile.update');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
