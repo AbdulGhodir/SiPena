@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Member - SiPena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = { theme: { extend: {
-        colors: { forest:'#173F35', sage:'#52796F', cream:'#F4E8CD',
-          background:'#FAF9F4', text:'#193F37', muted:'#81908B',
-          line:'#EDEDE7', danger:'#D94B4B' },
-        fontFamily: { sans:['Arial','Helvetica','sans-serif'] }
-      }}};
+        tailwind.config = { theme: { extend: {
+            colors: { forest:'#173F35', sage:'#52796F', cream:'#F4E8CD',
+                background:'#FAF9F4', text:'#193F37', muted:'#81908B',
+                line:'#EDEDE7', danger:'#D94B4B' },
+                fontFamily: { sans:['Poppins','Helvetica','sans-serif'] }
+            }}};
     </script>
 </head>
-</head>
-
 <body class="min-h-screen bg-background font-sans text-text ">
 
     @php
@@ -49,7 +50,7 @@
     <header class="navbar flex h-[72px] items-center justify-between gap-5 bg-background px-[30px] max-[700px]:h-auto max-[700px]:flex-wrap max-[700px]:px-[15px] max-[700px]:py-3">
 
         <a href="{{ url('/member/dashboard') }}" class="no-underline text-inherit brand flex items-center gap-[11px] text-[23px] font-extrabold text-forest max-[700px]:text-xl">
-            <span class="brand-icon grid h-10 w-[38px] place-items-center rounded-[11px] bg-forest text-[23px] text-cream">📖</span>
+            <x-logo size="w-5 h-5" />
             <span>SiPena</span>
         </a>
 
@@ -342,5 +343,6 @@
         &copy; {{ date('Y') }} SiPena · Sistem Informasi Perpustakaan
     </footer>
 
+    <x-lucide />
 </body>
 </html>

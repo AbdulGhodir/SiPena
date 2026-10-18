@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SiPena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,7 +21,7 @@
                         sand: '#D9C69A',
                     },
                     fontFamily: {
-                        sans: ['Arial', 'sans-serif'],
+                        sans: ['Poppins', 'sans-serif'],
                     },
                 },
             },
@@ -33,8 +36,9 @@
         <!-- Informasi SiPena -->
         <section class="flex flex-col justify-center bg-forest px-[30px] py-[30px] text-white min-[651px]:px-[38px] min-[651px]:py-12">
 
-            <div class="mb-6 text-[30px] font-bold min-[651px]:mb-6">
-                📚 Si<span class="text-sand">Pena</span>
+            <div class="mb-6 text-[30px] font-bold min-[651px]:mb-6 flex items-center gap-2">
+                <x-logo size="w-5 h-5" />
+                <span class="text-sand">SiPena</span>
             </div>
 
             <h1 class="mb-4 text-[25px] font-bold leading-[1.3] min-[651px]:text-[32px]">
@@ -151,5 +155,6 @@
 
     </div>
 
+    <x-lucide />
 </body>
 </html>
